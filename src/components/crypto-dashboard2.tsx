@@ -14,7 +14,7 @@ const generateData = (days: number): DataPoint[] => {
   const data: DataPoint[] = []
   let price = 63000
   let volume = 1000
-  const pointsPerDay = 4 // Reduce number of points to 4 per day
+  const pointsPerDay = 3 // Reduce number of points to 4 per day
   for (let i = 0; i < days * pointsPerDay; i++) {
     price += Math.random() * 200 - 100
     volume = Math.max(100, volume + Math.random() * 200 - 100)
@@ -94,8 +94,6 @@ export default function CryptoDashboard() {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-       
-
         <XAxis 
           dataKey="time" 
           axisLine={false}
@@ -112,14 +110,14 @@ export default function CryptoDashboard() {
         />
         <YAxis 
           yAxisId="right"
-          orientation="left"
+          orientation="right"
           domain={[0, 'dataMax']}
           axisLine={false}
           tickLine={false}
           tick={false}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Bar height={40} yAxisId="right" dataKey="volume" fill="#E5E7EB" opacity={0.5} />
+        <Bar yAxisId="right" dataKey="volume" fill="#E5E7EB" opacity={0.5} />
         <Area
           yAxisId="left"
           type="monotone"
@@ -128,15 +126,15 @@ export default function CryptoDashboard() {
           fillOpacity={1}
           fill="url(#colorGradient)"
         />
-      <Line 
-                          yAxisId="right"
-                          type="monotone" 
-                          dataKey="price" 
-                          stroke="#fff" 
-                          strokeWidth={1}
-                          dot={false} 
-                          activeDot={{ y: 8 }}
-                        />
+        <Line 
+          yAxisId="left"
+          type="monotone" 
+          dataKey="price" 
+          stroke="#4B40EE" 
+          strokeWidth={2}
+          dot={false} 
+          activeDot={{ r: 8 }}
+        />
       </ComposedChart>
     </ResponsiveContainer>
   ), [data])
@@ -224,7 +222,7 @@ export default function CryptoDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-[400px]  relative">
+                  <div className="h-[400px] relative">
                     {memoizedChart}
                     <HighestPriceTooltip data={data} />
                     <FixedTooltip data={data} />
