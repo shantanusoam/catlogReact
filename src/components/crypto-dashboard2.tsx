@@ -38,7 +38,7 @@ const CustomTooltip: React.FC<{
   active?: boolean;
   payload?: Array<{ value: number }>;
   label?: string;
-}> = ({ active, payload, label }) => {
+}> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[#1A243A] text-white p-2 rounded shadow text-sm">
