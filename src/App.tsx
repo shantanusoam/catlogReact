@@ -1,10 +1,10 @@
 import "./App.css";
-import CryptoDashboardJsx from "./components/crypto-dashboard2";
+import CatlogDashboard from "./components/CatlogDashboard";
 
 function App() {
   return (
     <>
-      <CryptoDashboardJsx />
+      <CatlogDashboard />
     </>
   );
 }
