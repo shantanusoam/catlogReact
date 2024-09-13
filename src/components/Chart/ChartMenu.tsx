@@ -4,11 +4,26 @@ import { timeRanges } from "@/consts/chart-consts";
 
 export const ChartControls: React.FC<{
   selectedRange: TimeRange;
+  isFullscreen: boolean;
+  isComparing: boolean;
+  toggleCompare: () => void;
+  toggleFullscreen: () => void;
   handleRangeChange: (range: TimeRange) => void;
-}> = ({ selectedRange, handleRangeChange }) => (
+}> = ({
+  selectedRange,
+  handleRangeChange,
+  isFullscreen,
+  isComparing,
+  toggleFullscreen,
+  toggleCompare,
+}) => (
   <div className="flex flex-wrap items-center  justify-between gap-1">
     <div className="flex items-center space-x-2">
-      <Button variant="ghost" className="flex items-center space-x-1">
+      <Button
+        variant="ghost"
+        className="flex items-center space-x-1"
+        onClick={toggleFullscreen}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -24,9 +39,15 @@ export const ChartControls: React.FC<{
           <path d="M8 12h8" />
           <path d="M12 8v8" />
         </svg>
-        <span>Fullscreen</span>
+        <span>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
       </Button>
-      <Button variant="ghost" className="flex items-center space-x-1">
+      <Button
+        variant="ghost"
+        className={`flex items-center space-x-1 ${
+          isComparing ? "bg-gray-200" : ""
+        }`}
+        onClick={toggleCompare}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -42,7 +63,7 @@ export const ChartControls: React.FC<{
           <line x1="12" y1="20" x2="12" y2="4" />
           <line x1="6" y1="20" x2="6" y2="14" />
         </svg>
-        <span>Compare</span>
+        <span>{isComparing ? "Hide Comparison" : "Compare"}</span>
       </Button>
     </div>
 
@@ -54,8 +75,8 @@ export const ChartControls: React.FC<{
           size="sm"
           className={`transition-all duration-200 ease-in-out ${
             range === selectedRange
-              ? "bg-[#4B40EE] text-white"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              ? "bg-[#4B40EE] font-bold text-white"
+              : "text-gray-500 font-semibold hover:text-gray-700 hover:bg-gray-100"
           }`}
           onClick={() => handleRangeChange(range)}
         >

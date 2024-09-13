@@ -8,11 +8,11 @@ interface DataPoint {
   volume: number;
 }
 
-const generateData = (days: number): DataPoint[] => {
+export const generateData = (days: number): DataPoint[] => {
   const data: DataPoint[] = [];
   let price = 63000;
   let volume = 1000;
-  const pointsPerDay = 4;
+  const pointsPerDay = 5;
   for (let i = 0; i < days * pointsPerDay; i++) {
     price += Math.random() * 200 - 100;
     volume = Math.max(100, volume + Math.random() * 200 - 100);

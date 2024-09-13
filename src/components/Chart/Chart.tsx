@@ -1,5 +1,5 @@
 import { DataPoint } from "@/types/catlogTypes";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("en-US", {
@@ -53,7 +53,7 @@ const HighestPriceTooltip: React.FC<{ data: DataPoint[] }> = memo(
 
 import React from "react";
 import { ChartControls } from "./ChartMenu";
-import { useChartData } from "@/hooks/useCharts";
+import { generateData, useChartData } from "@/hooks/useCharts";
 import {
   Area,
   Bar,
@@ -66,9 +66,44 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { timeRanges } from "@/consts/chart-consts";
 
 const Chart = () => {
   const { data, selectedRange, handleRangeChange } = useChartData();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isComparing, setIsComparing] = useState(false);
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      chartRef.current?.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const fullscreenChangeHandler = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", fullscreenChangeHandler);
+    return () => {
+      document.removeEventListener("fullscreenchange", fullscreenChangeHandler);
+    };
+  }, []);
+
+  const toggleCompare = () => {
+    setIsComparing(!isComparing);
+  };
+
+  const comparisonData = useMemo(() => {
+    if (isComparing) {
+      return generateData(timeRanges.indexOf(selectedRange) + 10);
+    }
+    return [];
+  }, [isComparing, selectedRange]);
 
   const memoizedChart = useMemo(
     () => (
@@ -129,6 +164,18 @@ const Chart = () => {
             dot={false}
             activeDot={{ r: 8 }}
           />
+          {isComparing && (
+            <Line
+              yAxisId="left"
+              type="monotone"
+              data={comparisonData}
+              dataKey="price"
+              stroke="#10B981"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 8 }}
+            />
+          )}
           <ReferenceLine
             y={data.length > 0 ? Math.max(...data.map((d) => d.price)) : 0}
             yAxisId="left" // Specify the correct yAxisId to match the left axis
@@ -138,16 +185,20 @@ const Chart = () => {
         </ComposedChart>
       </ResponsiveContainer>
     ),
-    [data]
+    [data, isComparing, comparisonData]
   );
 
   return (
     <>
       <ChartControls
+        toggleCompare={toggleCompare}
+        toggleFullscreen={toggleFullscreen}
+        isComparing={isComparing}
+        isFullscreen={isFullscreen}
         selectedRange={selectedRange}
         handleRangeChange={handleRangeChange}
       />
-      <div className="h-[400px] -ml-11 mt-2 relative">
+      <div ref={chartRef} className="h-[400px] -ml-11 mt-2 relative">
         {memoizedChart}
         <HighestPriceTooltip data={data} />
         <FixedTooltip data={data} />
